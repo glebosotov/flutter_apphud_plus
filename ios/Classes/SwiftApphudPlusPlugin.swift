@@ -2,10 +2,10 @@ import Flutter
 import UIKit
 import ApphudSDK
 import SwiftKeychainWrapper
+import os
 
 public class SwiftApphudPlusPlugin: NSObject, FlutterPlugin {
-    static let backgroundNotificationRuleNameKey: String = "apphud_plus_backgroundNotificationRuleName"
-    
+    static let backgroundNotificationInfoKey: String = "apphud_plus_backgroundNotificationInfo"
     static let notificationName: String = "apphud_plus_foregroundNotification"
     
     var paywallsDidLoad = false
@@ -13,12 +13,12 @@ public class SwiftApphudPlusPlugin: NSObject, FlutterPlugin {
     static var observer: NSObjectProtocol?
     var channel: FlutterMethodChannel?
     
-    
     public static func register(with registrar: FlutterPluginRegistrar) {
         let channel = FlutterMethodChannel(name: "apphud_plus", binaryMessenger: registrar.messenger())
         observer = nil
         let instance = SwiftApphudPlusPlugin()
         instance.channel = channel
+        /// Set local variable once the paywalls are loaded
         paywallsDidLoadCallback {
             instance.paywallsDidLoad = true
         }
@@ -32,17 +32,17 @@ public class SwiftApphudPlusPlugin: NSObject, FlutterPlugin {
             result(self.paywallsDidLoad)
             return
         case "hasProductWithId":
-            guard let arg = call.arguments as? [String], arg.count == 1 else {
+            guard let arg = call.arguments as? String else {
                 return
             }
-            findProductByID(productID: arg.first!, completion: {
+            findProductByID(productID: arg, completion: {
                 product in
                 result(product != nil)
             })
         case "purchaseProductWithId":
-            guard let arg = call.arguments as? [String], arg.count == 1 else {
+            guard let arg = call.arguments as? String else {
                 return }
-            findProductByID(productID: arg.first!, completion: { product in
+            findProductByID(productID: arg, completion: { product in
                 if let product = product {
                     Apphud.purchase(product, callback: {
                         purchaseResult in
@@ -65,35 +65,42 @@ public class SwiftApphudPlusPlugin: NSObject, FlutterPlugin {
             SwiftApphudPlusPlugin.observer = NotificationCenter.default.addObserver(forName: NSNotification.Name(SwiftApphudPlusPlugin.notificationName), object: nil, queue: OperationQueue.main) {
                 notification in
                 if let channel = self.channel {
-                    channel.invokeMethod("onNotification", arguments: [notification.userInfo!["rule_name"]])
+                    guard let notificationPayload = notification.userInfo,
+                          let jsonData = try? JSONSerialization.data(withJSONObject: notificationPayload, options: []),
+                          let jsonString = String(data: jsonData, encoding: String.Encoding.utf8) else { return }
+                    
+                    channel.invokeMethod("onNotification", arguments: jsonString)
                 }
-                result("Callback invoked")
             }
-            result("Initialized")
+            result(true)
             
         case "checkBackgroundNotification":
-            let ruleName = KeychainWrapper.standard.string(forKey: SwiftApphudPlusPlugin.backgroundNotificationRuleNameKey)
-            KeychainWrapper.standard.remove(forKey: KeychainWrapper.Key(rawValue: SwiftApphudPlusPlugin.backgroundNotificationRuleNameKey))
-            result(ruleName)
+            let notificationPayload = KeychainWrapper.standard.string(forKey: SwiftApphudPlusPlugin.backgroundNotificationInfoKey)
+            KeychainWrapper.standard.remove(forKey: KeychainWrapper.Key(rawValue: SwiftApphudPlusPlugin.backgroundNotificationInfoKey))
+            result(notificationPayload)
         default:
             return
         }
     }
     
     public static func handleBackgroundNotifications(_ apsInfo: [AnyHashable: Any]) {
-        if let ruleName = apsInfo["rule_name"] as? String {
-            KeychainWrapper.standard.set(ruleName, forKey: backgroundNotificationRuleNameKey)
-        }
+        
+        guard let jsonData = try? JSONSerialization.data(withJSONObject: apsInfo, options: []),
+              let jsonString = String(data: jsonData, encoding: String.Encoding.utf8) else { return }
+        
+        KeychainWrapper.standard.set(jsonString, forKey: backgroundNotificationInfoKey)
+        
     }
     
     public static func handleForegroundNotifications(_ apsInfo: [AnyHashable: Any]) {
-        if let ruleName = apsInfo["rule_name"] as? String {
-            NotificationCenter.default.post(name: NSNotification.Name(notificationName), object: nil, userInfo: ["rule_name": ruleName])
-        }
+            NotificationCenter.default.post(name: NSNotification.Name(notificationName), object: nil, userInfo: apsInfo)
     }
     
     deinit {
-        KeychainWrapper.standard.remove(forKey: KeychainWrapper.Key(rawValue: SwiftApphudPlusPlugin.backgroundNotificationRuleNameKey))
+        KeychainWrapper.standard.remove(forKey: KeychainWrapper.Key(rawValue: SwiftApphudPlusPlugin.backgroundNotificationInfoKey))
+        if #available(iOS 14, *) {
+            Logger(subsystem: "com.glebosotov.apphud_plus", category: "SwiftApphudPlusPlugin.swift").info("Removing notification info from last terminated state")
+        }
     }
 }
 

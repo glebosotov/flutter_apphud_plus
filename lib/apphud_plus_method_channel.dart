@@ -1,3 +1,6 @@
+import 'dart:convert';
+
+import 'package:apphud_plus/notification_model.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 
@@ -10,29 +13,47 @@ class MethodChannelApphudPlus extends ApphudPlusPlatform {
   @visibleForTesting
   final methodChannel = const MethodChannel('apphud_plus');
 
-  final List<ValueSetter<String>> _callbacks = <ValueSetter<String>>[];
+  final List<ValueSetter<String>> _callbacksRaw = <ValueSetter<String>>[];
+  final List<ValueSetter<ApphudNotificationPayload>> _callbacksModel =
+      <ValueSetter<ApphudNotificationPayload>>[];
 
   MethodChannelApphudPlus() {
     methodChannel.setMethodCallHandler(_handleMethod);
   }
 
   @override
-  Future<String?> getBackgroundNotificationRuleName() async {
+  Future<ApphudNotificationPayload?> getBackgroundNotificationPayload() async {
     final result =
-        await methodChannel.invokeMethod('checkBackgroundNotification');
+        await methodChannel.invokeMethod<String>('checkBackgroundNotification');
+    if (result == null) {
+      return null;
+    }
+    return ApphudNotificationPayload.fromJson(json.decode(result));
+  }
+
+  @override
+  Future<String?> getBackgroundNotificationPayloadRaw() async {
+    final result =
+        await methodChannel.invokeMethod<String>('checkBackgroundNotification');
     return result;
   }
 
   @override
   Future<void> addForegroundNotificationListener(
       ValueSetter<String> callback) async {
-    _callbacks.add((p0) => callback);
+    _callbacksRaw.add((p0) => callback);
+  }
+
+  @override
+  Future<void> addForegroundNotificationListenerRaw(
+      ValueSetter<ApphudNotificationPayload> callback) async {
+    _callbacksModel.add((p0) => callback);
   }
 
   @override
   Future<PurchaseResult> purchase(String productId) async {
-    final result =
-        await methodChannel.invokeMethod('purchaseProductWithId', [productId]);
+    final result = await methodChannel.invokeMethod<String>(
+        'purchaseProductWithId', productId);
     switch (result) {
       case 'activeSubscription':
         return PurchaseResult.activeSubscription;
@@ -45,23 +66,39 @@ class MethodChannelApphudPlus extends ApphudPlusPlatform {
 
   @override
   Future<bool> paywallsDidLoad() async {
-    final result = await methodChannel.invokeMethod('pawallsLoaded');
+    final result = await methodChannel.invokeMethod<bool>('pawallsLoaded');
+    if (result == null) {
+      throw Exception('paywallsDidLoad returned null');
+    }
     return result;
   }
 
   @override
   Future<bool> hasProductWithId(String productId) async {
-    final result = await methodChannel.invokeMethod('hasProductWithId');
+    final result =
+        await methodChannel.invokeMethod<bool>('hasProductWithId', productId);
+    if (result == null) {
+      throw Exception('hasProductWithId returned null');
+    }
     return result;
   }
 
-  /// Calls every method in [_callbacks]
+  /// Calls every method in [_callbacksRaw]
   Future<dynamic> _handleMethod(MethodCall call) async {
     switch (call.method) {
       case 'onNotification':
-        final String ruleName = call.arguments.first;
-        for (var callback in _callbacks) {
-          callback(ruleName);
+        final String notificationData = call.arguments;
+
+        for (var callback in _callbacksRaw) {
+          callback(notificationData);
+        }
+        for (var callback in _callbacksModel) {
+          try {
+            callback(ApphudNotificationPayload.fromJson(
+                jsonDecode(notificationData)));
+          } catch (e) {
+            rethrow;
+          }
         }
         break;
 

@@ -10,7 +10,7 @@ import apphud_plus
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
         GeneratedPluginRegistrant.register(with: self)
-        Apphud.start(apiKey: "API_KEY")
+        Apphud.start(apiKey: "YOUR_API_KEY")
         /// Ask for notification permission and listen for remote notifications
         registerForNotifications()
         return super.application(application, didFinishLaunchingWithOptions: launchOptions)

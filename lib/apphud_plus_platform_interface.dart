@@ -1,4 +1,5 @@
 import 'package:apphud_plus/apphud_plus.dart';
+import 'package:apphud_plus/notification_model.dart';
 import 'package:flutter/material.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
@@ -25,12 +26,21 @@ abstract class ApphudPlusPlatform extends PlatformInterface {
     _instance = instance;
   }
 
-  Future<String?> getBackgroundNotificationRuleName() async {
+  Future<ApphudNotificationPayload?> getBackgroundNotificationPayload() async {
+    throw UnimplementedError();
+  }
+
+  Future<String?> getBackgroundNotificationPayloadRaw() async {
     throw UnimplementedError();
   }
 
   Future<void> addForegroundNotificationListener(
       ValueSetter<String> callback) async {
+    throw UnimplementedError();
+  }
+
+  Future<void> addForegroundNotificationListenerRaw(
+      ValueSetter<ApphudNotificationPayload> callback) async {
     throw UnimplementedError();
   }
 
