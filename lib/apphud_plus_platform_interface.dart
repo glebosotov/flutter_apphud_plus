@@ -1,9 +1,12 @@
+import 'dart:async';
+
 import 'package:apphud_plus/apphud_plus.dart';
 import 'package:apphud_plus/notification_model.dart';
 import 'package:flutter/material.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
 import 'apphud_plus_method_channel.dart';
+import 'listener.dart';
 
 abstract class ApphudPlusPlatform extends PlatformInterface {
   /// Constructs a ApphudPlusPlatform.
@@ -55,4 +58,11 @@ abstract class ApphudPlusPlatform extends PlatformInterface {
   Future<bool> hasProductWithId(String productId) async {
     throw UnimplementedError();
   }
+
+  void setListener(ApphudPlusListener listener) {
+    throw UnimplementedError();
+  }
+
+  StreamController<bool> get paywallsDidLoadStream =>
+      throw UnimplementedError();
 }

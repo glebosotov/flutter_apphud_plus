@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:apphud_plus/notification_model.dart';
@@ -6,6 +7,7 @@ import 'package:flutter/services.dart';
 
 import '/apphud_plus.dart';
 import 'apphud_plus_platform_interface.dart';
+import 'listener.dart';
 
 /// An implementation of [ApphudPlusPlatform] that uses method channels.
 class MethodChannelApphudPlus extends ApphudPlusPlatform {
@@ -16,6 +18,9 @@ class MethodChannelApphudPlus extends ApphudPlusPlatform {
   final List<ValueSetter<String>> _callbacksRaw = <ValueSetter<String>>[];
   final List<ValueSetter<ApphudNotificationPayload>> _callbacksModel =
       <ValueSetter<ApphudNotificationPayload>>[];
+
+  ApphudPlusListener? _listener;
+  final _streamController = StreamController<bool>();
 
   MethodChannelApphudPlus() {
     methodChannel.setMethodCallHandler(_handleMethod);
@@ -83,6 +88,14 @@ class MethodChannelApphudPlus extends ApphudPlusPlatform {
     return result;
   }
 
+  @override
+  void setListener(ApphudPlusListener listener) {
+    _listener = listener;
+  }
+
+  @override
+  StreamController<bool> get paywallsDidLoadStream => _streamController;
+
   /// Calls every method in [_callbacksRaw]
   Future<dynamic> _handleMethod(MethodCall call) async {
     switch (call.method) {
@@ -100,6 +113,10 @@ class MethodChannelApphudPlus extends ApphudPlusPlatform {
             rethrow;
           }
         }
+        break;
+      case 'paywallsDidLoadStream':
+        _listener?.paywallsDidLoadCallback(call.arguments == true);
+        _streamController.add(call.arguments == true);
         break;
 
       default:

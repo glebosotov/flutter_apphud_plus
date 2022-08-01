@@ -7,3 +7,6 @@
 * Change the way notificaiton data is passed
 * Add some documentation
 * Add a README.md
+
+## 0.0.3
+* Add multiple ways to listen for loading paywalls (the AppStore ones)

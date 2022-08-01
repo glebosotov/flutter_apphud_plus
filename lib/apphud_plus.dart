@@ -1,7 +1,10 @@
+import 'dart:async';
+
 import 'package:apphud_plus/notification_model.dart';
 import 'package:flutter/material.dart';
 
 import 'apphud_plus_platform_interface.dart';
+import 'listener.dart';
 
 enum PurchaseResult {
   activeSubscription,
@@ -69,4 +72,17 @@ class ApphudPlus {
   Future<bool> hasProductWithId(String productId) async {
     return ApphudPlusPlatform.instance.hasProductWithId(productId);
   }
+
+  /// Create your implementation of [ApphudPlusListener]
+  /// and set it with [setListener].
+  ///
+  /// Currently, the only supported callback is [paywallsDidLoad].
+  void setListener(ApphudPlusListener listener) {
+    ApphudPlusPlatform.instance.setListener(listener);
+  }
+
+  /// Stream will get [true] when paywalls did load
+  /// and [false] if an error occured.
+  StreamController<bool> get paywallsDidLoadStream =>
+      ApphudPlusPlatform.instance.paywallsDidLoadStream;
 }

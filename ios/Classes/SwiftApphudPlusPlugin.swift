@@ -21,6 +21,7 @@ public class SwiftApphudPlusPlugin: NSObject, FlutterPlugin {
         /// Set local variable once the paywalls are loaded
         paywallsDidLoadCallback {
             instance.paywallsDidLoad = true
+            channel.invokeMethod("paywallsDidLoadStream", arguments: true)
         }
         registrar.addMethodCallDelegate(instance, channel: channel)
     }
