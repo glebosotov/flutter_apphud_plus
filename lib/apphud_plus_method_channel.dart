@@ -104,8 +104,13 @@ class MethodChannelApphudPlus extends ApphudPlusPlatform {
 
   @override
   StreamController<bool> paywallsDidLoadStream() {
-    // Future.value(() async => _streamController.add(await paywallsDidLoad()));
+    Future.value(() async => _streamController.add(await paywallsDidLoad()));
     return _streamController;
+  }
+
+  @override
+  Future<bool> hasActiveSubscription() async {
+    return await methodChannel.invokeMethod<bool>('hasSubscription') ?? false;
   }
 
   /// Calls every method in [_callbacksRaw]

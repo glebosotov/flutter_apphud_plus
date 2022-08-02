@@ -17,3 +17,9 @@
 
 ## 0.0.5
 * Change stream to broadcast, improve its lifecycle
+
+## 0.0.5-1
+* Fix a bug where second stream listener would not get initial event
+
+## 0.0.6
+* hasActiveSubscription method

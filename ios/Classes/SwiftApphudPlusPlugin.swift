@@ -32,6 +32,8 @@ public class SwiftApphudPlusPlugin: NSObject, FlutterPlugin {
         case "pawallsLoaded":
             result(self.paywallsDidLoad)
             return
+        case "hasSubscription":
+            result(Apphud.hasActiveSubscription())
         case "hasProductWithId":
             guard let arg = call.arguments as? String else {
                 return

@@ -63,5 +63,9 @@ abstract class ApphudPlusPlatform extends PlatformInterface {
     throw UnimplementedError();
   }
 
+  Future<bool> hasActiveSubscription() async {
+    throw UnimplementedError();
+  }
+
   StreamController<bool> paywallsDidLoadStream() => throw UnimplementedError();
 }

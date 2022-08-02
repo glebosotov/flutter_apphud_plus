@@ -85,4 +85,9 @@ class ApphudPlus {
   /// and [false] if an error occured.
   StreamController<bool> paywallsDidLoadStream() =>
       ApphudPlusPlatform.instance.paywallsDidLoadStream();
+
+  /// Returns true if the user has an active subscription.
+  Future<bool> hasActiveSubscription() async {
+    return ApphudPlusPlatform.instance.hasActiveSubscription();
+  }
 }
