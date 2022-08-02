@@ -83,6 +83,6 @@ class ApphudPlus {
 
   /// Stream will get [true] when paywalls did load
   /// and [false] if an error occured.
-  StreamController<bool> get paywallsDidLoadStream =>
-      ApphudPlusPlatform.instance.paywallsDidLoadStream;
+  StreamController<bool> paywallsDidLoadStream() =>
+      ApphudPlusPlatform.instance.paywallsDidLoadStream();
 }

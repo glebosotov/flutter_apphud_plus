@@ -91,10 +91,19 @@ class MethodChannelApphudPlus extends ApphudPlusPlatform {
   @override
   void setListener(ApphudPlusListener listener) {
     _listener = listener;
+    Future.value(() async {
+      final stateOfPaywalls = await paywallsDidLoad();
+      if (stateOfPaywalls) {
+        listener.paywallsDidLoadCallback(stateOfPaywalls);
+      }
+    });
   }
 
   @override
-  StreamController<bool> get paywallsDidLoadStream => _streamController;
+  StreamController<bool> paywallsDidLoadStream() {
+    Future.value(() async => _streamController.add(await paywallsDidLoad()));
+    return _streamController;
+  }
 
   /// Calls every method in [_callbacksRaw]
   Future<dynamic> _handleMethod(MethodCall call) async {
