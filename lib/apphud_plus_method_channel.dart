@@ -20,10 +20,13 @@ class MethodChannelApphudPlus extends ApphudPlusPlatform {
       <ValueSetter<ApphudNotificationPayload>>[];
 
   ApphudPlusListener? _listener;
-  final _streamController = StreamController<bool>();
+  late final StreamController<bool> _streamController;
 
   MethodChannelApphudPlus() {
     methodChannel.setMethodCallHandler(_handleMethod);
+    _streamController = StreamController<bool>.broadcast(
+        onListen: () async =>
+            _streamController.sink.add(await paywallsDidLoad()));
   }
 
   @override
@@ -101,7 +104,7 @@ class MethodChannelApphudPlus extends ApphudPlusPlatform {
 
   @override
   StreamController<bool> paywallsDidLoadStream() {
-    Future.value(() async => _streamController.add(await paywallsDidLoad()));
+    // Future.value(() async => _streamController.add(await paywallsDidLoad()));
     return _streamController;
   }
 

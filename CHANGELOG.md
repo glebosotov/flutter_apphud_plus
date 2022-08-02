@@ -14,3 +14,6 @@
 
 ## 0.0.4
 * Add initial event to paywallsDidLoad stream, so that if you start listening to it after the paywalls are loaded, you'll get the event
+
+## 0.0.5
+* Change stream to broadcast, improve its lifecycle
