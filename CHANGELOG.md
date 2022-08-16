@@ -23,3 +23,6 @@
 
 ## 0.0.6
 * hasActiveSubscription method
+
+## 0.0.7
+* update Apphud SDK
