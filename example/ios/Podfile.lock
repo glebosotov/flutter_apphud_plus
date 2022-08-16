@@ -3,7 +3,7 @@ PODS:
     - ApphudSDK
     - Flutter
     - SwiftKeychainWrapper
-  - ApphudSDK (2.8.3)
+  - ApphudSDK (2.8.5)
   - Flutter (1.0.0)
   - SwiftKeychainWrapper (4.0.1)
 
@@ -24,7 +24,7 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   apphud_plus: 399b20c113d12b1763af0851d393a0672ccbcacb
-  ApphudSDK: a9d093a57d9fe5c7714380caad7bce5f9243f8a1
+  ApphudSDK: af0f66b67136074e094f3ceec45c0a3dabe223df
   Flutter: 50d75fe2f02b26cc09d224853bb45737f8b3214a
   SwiftKeychainWrapper: 807ba1d63c33a7d0613288512399cd1eda1e470c
 
