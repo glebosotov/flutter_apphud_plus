@@ -26,3 +26,6 @@
 
 ## 0.0.7
 * update Apphud SDK
+
+## 0.0.8
+* Change versioning to '~>' operator for automatic updates

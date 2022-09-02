@@ -15,7 +15,7 @@ A new Flutter plugin project.
   s.source           = { :path => '.' }
   s.source_files = 'Classes/**/*'
   s.dependency 'Flutter'
-  s.dependency 'ApphudSDK'
+  s.dependency 'ApphudSDK', '~> 2.8'
   s.dependency 'SwiftKeychainWrapper'
   s.platform = :ios, '12.0'
 
