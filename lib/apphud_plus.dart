@@ -6,10 +6,46 @@ import 'package:flutter/material.dart';
 import 'apphud_plus_platform_interface.dart';
 import 'listener.dart';
 
-enum PurchaseResult {
+class PurchaseResult {
+  final PurchaseResultType type;
+  final String? error;
+
+  PurchaseResult({
+    required this.type,
+    this.error,
+  });
+
+  @override
+  String toString() {
+    return 'PurchaseResult{type: $type, error: $error}';
+  }
+}
+
+enum PurchaseResultType {
   activeSubscription,
   activePurchase,
-  error,
+  unknownError,
+  skErrorUnknown,
+  skErrorClientInvalid,
+  skErrorPaymentCancelled,
+  skErrorPaymentInvalid,
+  skErrorPaymentNotAllowed,
+  skErrorStoreProductNotAvailable,
+  skErrorCloudServicePermissionDenied,
+  skErrorCloudServiceNetworkConnectionFailed,
+  skErrorCloudServiceRevoked,
+  skErrorPrivacyAcknowledgementRequired,
+  skErrorUnauthorizedRequestData,
+  skErrorInvalidOfferIdentifier,
+  skErrorInvalidOfferPrice,
+  skErrorInvalidSignature,
+  skErrorMissingOfferParams,
+  skErrorIneligibleForOffer,
+  skErrorOverlayCancelled,
+  skErrorInvalidConfiguration,
+  skErrorOverlayPresentedInBackGroundScene,
+  skErrorOverlayTimeout,
+  skErrorUnsupportedPlatform,
 }
 
 class ApphudPlus {
@@ -55,9 +91,9 @@ class ApphudPlus {
 
   /// Initiates purchase of a product.
   ///
-  /// Returns [PurchaseResult] with [PurchaseResult.activeSubscription] if the user now has a subscription,
-  /// [PurchaseResult.activePurchase] if the user made a purchase,
-  /// [PurchaseResult.error] if the purchase failed for any reason (Run with Xcode
+  /// Returns [PurchaseResult] with [PurchaseResultType.activeSubscription] if the user now has a subscription,
+  /// [PurchaseResultType.activePurchase] if the user made a purchase,
+  /// other [PurchaseResult] if the purchase failed for any reason (Run with Xcode
   /// for more datails).
   Future<PurchaseResult> purchase(String productId) async {
     return ApphudPlusPlatform.instance.purchase(productId);

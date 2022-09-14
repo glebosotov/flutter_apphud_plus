@@ -64,11 +64,109 @@ class MethodChannelApphudPlus extends ApphudPlusPlatform {
         'purchaseProductWithId', productId);
     switch (result) {
       case 'activeSubscription':
-        return PurchaseResult.activeSubscription;
+        return PurchaseResult(type: PurchaseResultType.activeSubscription);
       case 'activePurchase':
-        return PurchaseResult.activePurchase;
+        return PurchaseResult(type: PurchaseResultType.activePurchase);
       default:
-        return PurchaseResult.error;
+        if (result == null) {
+          return PurchaseResult(type: PurchaseResultType.unknownError);
+        }
+        final regExp = RegExp('SKErrorDomain error [0-9]+');
+        if (result.contains(regExp)) {
+          final errorCodeString = regExp.firstMatch(result)![0];
+          if (errorCodeString == null) {
+            return PurchaseResult(type: PurchaseResultType.unknownError);
+          }
+          final errorCode = int.parse(errorCodeString.split(' ')[2]);
+          switch (errorCode) {
+            case 0:
+              return PurchaseResult(
+                  type: PurchaseResultType.skErrorUnknown, error: result);
+            case 1:
+              return PurchaseResult(
+                  type: PurchaseResultType.skErrorClientInvalid, error: result);
+            case 2:
+              return PurchaseResult(
+                  type: PurchaseResultType.skErrorPaymentCancelled,
+                  error: result);
+            case 3:
+              return PurchaseResult(
+                  type: PurchaseResultType.skErrorPaymentInvalid,
+                  error: result);
+            case 4:
+              return PurchaseResult(
+                  type: PurchaseResultType.skErrorPaymentNotAllowed,
+                  error: result);
+            case 5:
+              return PurchaseResult(
+                  type: PurchaseResultType.skErrorStoreProductNotAvailable,
+                  error: result);
+            case 6:
+              return PurchaseResult(
+                  type: PurchaseResultType.skErrorCloudServicePermissionDenied,
+                  error: result);
+            case 7:
+              return PurchaseResult(
+                  type: PurchaseResultType
+                      .skErrorCloudServiceNetworkConnectionFailed,
+                  error: result);
+            case 8:
+              return PurchaseResult(
+                  type: PurchaseResultType.skErrorCloudServiceRevoked,
+                  error: result);
+            case 9:
+              return PurchaseResult(
+                  type:
+                      PurchaseResultType.skErrorPrivacyAcknowledgementRequired,
+                  error: result);
+            case 10:
+              return PurchaseResult(
+                  type: PurchaseResultType.skErrorUnauthorizedRequestData,
+                  error: result);
+            case 11:
+              return PurchaseResult(
+                  type: PurchaseResultType.skErrorInvalidOfferIdentifier,
+                  error: result);
+            case 12:
+              return PurchaseResult(
+                  type: PurchaseResultType.skErrorInvalidOfferPrice,
+                  error: result);
+            case 13:
+              return PurchaseResult(
+                  type: PurchaseResultType.skErrorInvalidSignature,
+                  error: result);
+            case 14:
+              return PurchaseResult(
+                  type: PurchaseResultType.skErrorMissingOfferParams,
+                  error: result);
+            case 15:
+              return PurchaseResult(
+                  type: PurchaseResultType.skErrorIneligibleForOffer,
+                  error: result);
+            case 16:
+              return PurchaseResult(
+                  type: PurchaseResultType.skErrorOverlayCancelled,
+                  error: result);
+            case 17:
+              return PurchaseResult(
+                  type: PurchaseResultType
+                      .skErrorOverlayPresentedInBackGroundScene,
+                  error: result);
+            case 18:
+              return PurchaseResult(
+                  type: PurchaseResultType.skErrorOverlayTimeout,
+                  error: result);
+            case 19:
+              return PurchaseResult(
+                  type: PurchaseResultType.skErrorUnsupportedPlatform,
+                  error: result);
+            default:
+              return PurchaseResult(
+                  type: PurchaseResultType.unknownError, error: result);
+          }
+        }
+        return PurchaseResult(
+            type: PurchaseResultType.unknownError, error: result);
     }
   }
 
