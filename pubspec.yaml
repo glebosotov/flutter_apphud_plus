@@ -1,6 +1,6 @@
 name: apphud_plus
 description: A package for listening to Apphud notifications and purchasing products.
-version: 0.0.10
+version: 0.0.11
 homepage: https://github.com/glebosotov/flutter_apphud_plus
 
 environment:
@@ -20,9 +20,9 @@ dev_dependencies:
 flutter:
   plugin:
     platforms:
-      # android:
-      #   package: com.example.apphud_plus
-      #   pluginClass: ApphudPlusPlugin
+      android:
+        package: com.glebosotov.apphud_plus
+        pluginClass: ApphudPlusPlugin
       ios:
         pluginClass: ApphudPlusPlugin
       # linux:

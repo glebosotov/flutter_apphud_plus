@@ -43,3 +43,7 @@
 ## 0.0.10
 
 * Fix parsing error
+
+## 0.0.11
+
+* Add empty android support

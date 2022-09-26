@@ -1,4 +1,4 @@
-package com.example.apphud_plus
+package com.glebosotov.apphud_plus
 
 import androidx.annotation.NonNull
 
